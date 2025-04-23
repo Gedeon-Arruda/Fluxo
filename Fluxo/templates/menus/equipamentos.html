@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Equipamentos - Fluxo de Chamados{% endblock %}
+
+{% block content %}
+<div id="equipamentos-flow" class="mt-4">
+  <div class="card">
+    <div class="card-header">
+      Equipamentos
+    </div>
+    <div class="card-body">
+      <!-- Menu de Opções: Solicitação de Equipamentos e Informar Problemas -->
+      <div class="row text-center mb-4">
+        <div class="col">
+          <button type="button" class="btn btn-outline-primary w-100 py-4" onclick="showSolicitacao()">
+            <i class="bi bi-plus-circle fs-1 mb-2"></i>
+            <div>Solicitação de Equipamentos</div>
+          </button>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-outline-primary w-100 py-4" onclick="showProblemas()">
+            <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
+            <div>Informar Problemas</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Formulário de Solicitação de Equipamentos -->
+      <form id="solicitacaoForm" style="display: none;">
+        <!-- Etapa 1: Seleção do Equipamento -->
+        <div id="sol-step1">
+          <div class="mb-3">
+            <select class="form-select" id="sol_equipamento" name="equipamento" required onchange="showSolStep2()">
+              <option value="" disabled selected>Escolha um equipamento...</option>
+              <option value="mouse">Mouse</option>
+              <option value="notebook">Notebook</option>
+              <option value="teclado">Teclado</option>
+              <option value="tv_corporativa">TV Corporativa</option>
+              <option value="relogio_de_ponto">Relógio de ponto</option>
+              <option value="outros">Outros equipamentos / Periféricos</option>
+            </select>
+          </div>
+        </div>
+        <!-- Etapa 2: Dados da Solicitação -->
+        <div id="sol-step2" style="display: none;">
+          <div class="mb-3">
+            <label for="sol_requester" class="form-label">Requerente:</label>
+            <input type="text" class="form-control" id="sol_requester" name="requester" placeholder="Informe seu nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="sol_phone" class="form-label">Telefone:</label>
+            <input type="text" class="form-control" id="sol_phone" name="phone" placeholder="Informe seu telefone" required>
+          </div>
+          <div class="mb-3">
+            <label for="sol_department" class="form-label">Setor/Andar:</label>
+            <input type="text" class="form-control" id="sol_department" name="department" placeholder="Informe seu setor/andar" required>
+          </div>
+          <div class="mb-3">
+            <label for="sol_description" class="form-label">Descrição da Solicitação:</label>
+            <textarea class="form-control" id="sol_description" name="description" rows="4" placeholder="Explique a solicitação" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Enviar Solicitação</button>
+        </div>
+      </form>
+
+      <!-- Formulário de Informar Problemas -->
+      <form id="problemasForm" style="display: none;">
+        <!-- Etapa 1: Seleção do Equipamento -->
+        <div id="prob-step1">
+          <div class="mb-3">
+            <select class="form-select" id="prob_equipamento" name="equipamento" required onchange="showProbStep2()">
+              <option value="" disabled selected>Escolha um equipamento...</option>
+              <option value="mouse">Mouse</option>
+              <option value="notebook">Notebook</option>
+              <option value="teclado">Teclado</option>
+              <option value="tv_corporativa">TV Corporativa</option>
+              <option value="relogio_de_ponto">Relógio de ponto</option>
+              <option value="outros">Outros equipamentos / Periféricos</option>
+            </select>
+          </div>
+        </div>
+        <!-- Etapa 2: Informações do Problema -->
+        <div id="prob-step2" style="display: none;">
+          <div class="mb-3">
+            <label for="prob_requester" class="form-label">Requerente:</label>
+            <input type="text" class="form-control" id="prob_requester" name="requester" placeholder="Informe seu nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="prob_phone" class="form-label">Telefone:</label>
+            <input type="text" class="form-control" id="prob_phone" name="phone" placeholder="Informe seu telefone" required>
+          </div>
+          <div class="mb-3">
+            <label for="prob_department" class="form-label">Setor/Andar:</label>
+            <input type="text" class="form-control" id="prob_department" name="department" placeholder="Informe seu setor/andar" required>
+          </div>
+          <div class="mb-3">
+            <label for="prob_description" class="form-label">Descrição do Problema:</label>
+            <textarea class="form-control" id="prob_description" name="description" rows="4" placeholder="Descreva o problema" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Enviar Solicitação</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Exibe o formulário de Solicitação e oculta o de Problemas
+  function showSolicitacao() {
+    document.getElementById("solicitacaoForm").style.display = "block";
+    document.getElementById("problemasForm").style.display = "none";
+    // Reinicia a etapa 2 da solicitação, se necessário
+    document.getElementById("sol-step2").style.display = "none";
+  }
+
+  // Exibe o formulário de Problemas e oculta o de Solicitação
+  function showProblemas() {
+    document.getElementById("problemasForm").style.display = "block";
+    document.getElementById("solicitacaoForm").style.display = "none";
+    // Reinicia a etapa 2 do fluxo de problemas, se necessário
+    document.getElementById("prob-step2").style.display = "none";
+  }
+
+  // Exibe a Etapa 2 do fluxo de Solicitação assim que um equipamento for selecionado
+  function showSolStep2() {
+    var equipamento = document.getElementById("sol_equipamento").value;
+    if (equipamento !== "") {
+      document.getElementById("sol-step2").style.display = "block";
+    }
+  }
+
+  // Exibe a Etapa 2 do fluxo de Problemas assim que um equipamento for selecionado
+  function showProbStep2() {
+    var equipamento = document.getElementById("prob_equipamento").value;
+    if (equipamento !== "") {
+      document.getElementById("prob-step2").style.display = "block";
+    }
+  }
+
+  // Submissão do formulário de Solicitação
+  document.getElementById("solicitacaoForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    alert("Solicitação enviada com sucesso!");
+    this.reset();
+    document.getElementById("sol-step2").style.display = "none";
+  });
+
+  // Submissão do formulário de Problemas
+  document.getElementById("problemasForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    alert("Solicitação enviada com sucesso!");
+    this.reset();
+    document.getElementById("prob-step2").style.display = "none";
+  });
+</script>
+{% endblock %}

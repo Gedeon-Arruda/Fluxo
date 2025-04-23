@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Conectividade, Rede e VPN - Fluxo de Chamados{% endblock %}
+
+{% block content %}
+<div id="rede-flow" class="mt-4">
+  <div class="card">
+    <div class="card-header">
+      Conectividade, Rede e VPN
+    </div>
+    <div class="card-body">
+      <!-- Menu Principal: os ícones permanecem visíveis -->
+      <div id="mainMenu" class="mb-4">
+        <div class="row text-center">
+          <div class="col">
+            <button type="button" class="btn btn-outline-primary w-100 py-4" onclick="showFalhaFlow()">
+              <i class="bi bi-exclamation-triangle fs-1 mb-2"></i>
+              <div>Falha de Internet e Rede</div>
+            </button>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-outline-primary w-100 py-4" onclick="showVpnFlow()">
+              <i class="bi bi-shield-lock fs-1 mb-2"></i>
+              <div>Acesso VPN</div>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Fluxo Falha de Internet e Rede -->
+      <div id="falhaFlow" style="display: none;" class="mt-4">
+        <div class="mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="reportFailure" id="report_internet" value="internet" required onchange="checkFalhaFields()">
+            <label class="form-check-label" for="report_internet">Internet</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="reportFailure" id="report_rede" value="rede" onchange="checkFalhaFields()">
+            <label class="form-check-label" for="report_rede">Rede</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="reportFailure" id="report_vpn" value="vpn" onchange="checkFalhaFields()">
+            <label class="form-check-label" for="report_vpn">VPN</label>
+          </div>
+        </div>
+        <!-- Dados comuns para fluxo de Falha -->
+        <div id="falhaDetails" style="display: none;" class="mt-4">
+          <div class="mb-3">
+            <label for="requester_fail" class="form-label">Requerente:</label>
+            <input type="text" class="form-control" id="requester_fail" name="requester_fail" placeholder="Informe seu nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="phone_fail" class="form-label">Telefone:</label>
+            <input type="text" class="form-control" id="phone_fail" name="phone_fail" placeholder="Informe seu telefone" required>
+          </div>
+          <div class="mb-3">
+            <label for="department_fail" class="form-label">Setor/Andar:</label>
+            <input type="text" class="form-control" id="department_fail" name="department_fail" placeholder="Informe o setor/andar" required>
+          </div>
+          <div class="mb-3">
+            <label for="description_fail" class="form-label">Descrição:</label>
+            <textarea class="form-control" id="description_fail" name="description_fail" rows="4" placeholder="Explique sua solicitação" required></textarea>
+          </div>
+          <button type="button" class="btn btn-success" onclick="submitFalhaForm()">Enviar Solicitação</button>
+        </div>
+      </div>
+      
+      <!-- Fluxo de Acesso VPN -->
+      <div id="vpnFlowSection" style="display: none;" class="mt-4">
+        <!-- Etapa VPN 1: Seleção da ação -->
+        <div id="vpnStep1">
+          <div class="mb-3">
+            <label class="form-label">Selecione a ação desejada:</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="vpnAction" id="vpnOption1" value="vpn_lib" required onchange="showVpnStep2()">
+              <label class="form-check-label" for="vpnOption1">Liberação de acesso à VPN</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="vpnAction" id="vpnOption2" value="vpn_bloq" onchange="showVpnStep2()">
+              <label class="form-check-label" for="vpnOption2">Bloqueio de acesso à VPN</label>
+            </div>
+          </div>
+        </div>
+        <!-- Etapa VPN 2: Seleção do horário e acessos necessários -->
+        <div id="vpnStep2" style="display: none;" class="mt-4">
+          <div class="mb-3">
+            <label class="form-label">Selecione o horário de acesso:</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="vpnTime" id="vpnTime1" value="comercial" required onchange="checkVpnFields()">
+              <label class="form-check-label" for="vpnTime1">Horário Comercial</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="vpnTime" id="vpnTime2" value="integral" onchange="checkVpnFields()">
+              <label class="form-check-label" for="vpnTime2">Integral</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="vpnTime" id="vpnTime3" value="sob_demanda" onchange="checkVpnFields()">
+              <label class="form-check-label" for="vpnTime3">Sob Demanda</label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="vpnAccessRequired" class="form-label">Acessos Necessários:</label>
+            <input type="text" class="form-control" id="vpnAccessRequired" name="vpnAccessRequired" placeholder="Informe os acessos necessários" required oninput="checkVpnFields()">
+          </div>
+        </div>
+        <!-- Campos comuns para o fluxo VPN -->
+        <div id="vpnCommon" style="display: none;" class="mt-4">
+          <div class="mb-3">
+            <label for="requester_vpn" class="form-label">Requerente:</label>
+            <input type="text" class="form-control" id="requester_vpn" name="requester_vpn" placeholder="Informe seu nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="phone_vpn" class="form-label">Telefone:</label>
+            <input type="text" class="form-control" id="phone_vpn" name="phone_vpn" placeholder="Informe seu telefone" required>
+          </div>
+          <div class="mb-3">
+            <label for="department_vpn" class="form-label">Setor/Andar:</label>
+            <input type="text" class="form-control" id="department_vpn" name="department_vpn" placeholder="Informe o setor/andar" required>
+          </div>
+          <div class="mb-3">
+            <label for="description_vpn" class="form-label">Descrição:</label>
+            <textarea class="form-control" id="description_vpn" name="description_vpn" rows="4" placeholder="Explique sua solicitação" required></textarea>
+          </div>
+          <button type="button" class="btn btn-success" onclick="submitVpnForm()">Enviar Solicitação</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Exibe o fluxo de Falha de Internet e Rede
+  function showFalhaFlow() {
+    document.getElementById("falhaFlow").style.display = "block";
+    document.getElementById("vpnFlowSection").style.display = "none";
+  }
+  
+  // Exibe o fluxo de Acesso VPN
+  function showVpnFlow() {
+    document.getElementById("vpnFlowSection").style.display = "block";
+    document.getElementById("falhaFlow").style.display = "none";
+  }
+  
+  // Para a opção de Reportar Falha, exibe os detalhes ao selecionar uma opção de radio.
+  function checkFalhaFields() {
+    var selected = document.querySelector('input[name="reportFailure"]:checked');
+    if (selected) {
+      document.getElementById("falhaDetails").style.display = "block";
+    }
+  }
+  
+  // VPN Flow: Exibe a etapa 2 após selecionar uma ação
+  function showVpnStep2() {
+    const vpnAction = document.querySelector('input[name="vpnAction"]:checked');
+    if (vpnAction) {
+      document.getElementById("vpnStep2").style.display = "block";
+    }
+  }
+  
+  // VPN Flow: Checa se os campos necessários foram preenchidos e exibe os campos comuns
+  function checkVpnFields() {
+    const vpnAccess = document.getElementById("vpnAccessRequired").value;
+    const vpnTime = document.querySelector('input[name="vpnTime"]:checked');
+    if (vpnAccess.trim() !== "" && vpnTime) {
+      document.getElementById("vpnCommon").style.display = "block";
+    }
+  }
+  
+  // Submissão dos formulários
+  function submitFalhaForm() {
+    alert("Solicitação de Falha enviada com sucesso!");
+    document.getElementById("redeForm").reset();
+    hideAllFlows();
+  }
+  
+  function submitVpnForm() {
+    alert("Solicitação de Acesso VPN enviada com sucesso!");
+    document.getElementById("redeForm").reset();
+    hideAllFlows();
+  }
+  
+  // Oculta ambos os fluxos (para reiniciar)
+  function hideAllFlows() {
+    document.getElementById("falhaFlow").style.display = "none";
+    document.getElementById("vpnFlowSection").style.display = "none";
+  }
+</script>
+{% endblock %}

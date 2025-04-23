@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(90deg, #007d3c, #00a855);">
+  <div class="container">
+    <a class="navbar-brand fs-3 fw-bold" href="/">Fluxo de Chamados</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- Centralizando os itens do menu -->
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a class="nav-link fs-5 {% if request.path == '/' %}active{% endif %}" href="/">Acesso, Segurança e Licenciamento</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fs-5 {% if request.path == '/equipamentos' %}active{% endif %}" href="/equipamentos">Equipamentos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fs-5 {% if request.path == '/sistemas' %}active{% endif %}" href="/sistemas">Sistemas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fs-5 {% if request.path == '/rede' %}active{% endif %}" href="/rede">Conectividade, Rede e VPN</a>
+        </li>
+      </ul>
+      <!-- Botão para dark mode, alinhado à direita -->
+      <div class="d-flex align-items-center">
+        <button class="btn btn-outline-light ms-3" onclick="toggleDarkMode()">
+          <i class="bi bi-moon-fill" id="dark-icon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

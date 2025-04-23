@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Acessos - Fluxo de Chamados{% endblock %}
+
+{% block content %}
+<div id="acessos-flow" class="mt-4">
+  <div class="card">
+    <div class="card-header">
+      Acesso, Segurança e Licenciamento
+    </div>
+    <div class="card-body">
+      <form id="accessForm">
+        <!-- Etapa 1: Menu Inicial com ícones, centralizado -->
+        <div id="step1">
+          <div class="row gx-3 justify-content-center">
+            <div class="col-5 text-center mb-3">
+              <button type="button"
+                      class="btn btn-outline-primary w-100 py-4 d-flex flex-column align-items-center"
+                      onclick="selectFlow('acessos')">
+                <i class="bi bi-people fs-1 mb-2"></i>
+                <span>Acessos</span>
+              </button>
+            </div>
+            <div class="col-5 text-center mb-3">
+              <button type="button"
+                      class="btn btn-outline-primary w-100 py-4 d-flex flex-column align-items-center"
+                      onclick="selectFlow('licenciamento')">
+                <i class="bi bi-file-earmark-lock2 fs-1 mb-2"></i>
+                <span>Licenciamento</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Etapa 2: Dropdown com a lista de sistemas (vai depender do fluxo escolhido) -->
+        <div id="step2" style="display: none;" class="mt-4">
+          <div class="mb-3">
+            <label for="systemDropdown" class="form-label">Escolha um sistema:</label>
+            <select class="form-select" id="systemDropdown" name="systemChoice" onchange="showStep3()">
+              <option value="" disabled selected>Escolha um sistema...</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Etapa 3: Dados da Solicitação -->
+        <div id="step3" style="display: none;" class="mt-4">
+          <div class="mb-3">
+            <label for="requester" class="form-label">Requerente:</label>
+            <input type="text" class="form-control" id="requester" name="requester" placeholder="Informe seu nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Telefone:</label>
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="Informe seu telefone" required>
+          </div>
+          <div class="mb-3">
+            <label for="department" class="form-label">Setor/Andar:</label>
+            <input type="text" class="form-control" id="department" name="department" placeholder="Informe o setor/andar" required>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Descrição da Solicitação:</label>
+            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Explique sua solicitação" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Enviar Solicitação</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Variável global para armazenar o fluxo selecionado: "acessos" ou "licenciamento"
+  let selectedFlow = "";
+
+  // Ao clicar em um dos ícones, registra o fluxo e configura o dropdown conforme o caso
+  function selectFlow(flow) {
+    selectedFlow = flow;
+    const dropdown = document.getElementById("systemDropdown");
+    // Reinicia o dropdown
+    dropdown.innerHTML = '<option value="" disabled selected>Escolha um sistema...</option>';
+    if (flow === "acessos") {
+      // Lista de sistemas para o fluxo de Acessos (todos os sistemas, ordenados alfabeticamente)
+      const systems = [
+        { value: "adp", text: "ADP" },
+        { value: "agiliza_ai", text: "Agiliza AI" },
+        { value: "agilize", text: "Agilize" },
+        { value: "azure_devops", text: "Azure DevOps" },
+        { value: "blip", text: "Blip" },
+        { value: "ccaip", text: "CCAIP" },
+        { value: "dynamics_ax", text: "Dynamics AX" },
+        { value: "ease_flow", text: "Ease Flow" },
+        { value: "email", text: "Email" },
+        { value: "google_insights", text: "Google Conversational Insights" },
+        { value: "informange", text: "Informange" },
+        { value: "nucleos", text: "Núcleos" },
+        { value: "softexpert", text: "SoftExpert" },
+        { value: "soumv", text: "SouMV" },
+        { value: "spa", text: "SPA" },
+        { value: "speedtask", text: "SpeedTask" }
+      ];
+      systems.forEach(system => {
+        dropdown.innerHTML += `<option value="${system.value}">${system.text}</option>`;
+      });
+    } else if (flow === "licenciamento") {
+      // Para Licenciamento, apenas Office 365
+      dropdown.innerHTML += `<option value="office365">Office 365</option>`;
+    }
+    // Exibe a etapa do dropdown
+    document.getElementById("step2").style.display = "block";
+    // Oculta os campos comuns, se por acaso já estivessem visíveis
+    document.getElementById("step3").style.display = "none";
+  }
+
+  // Exibe os dados da solicitação quando o sistema é selecionado
+  function showStep3() {
+    const dropdown = document.getElementById("systemDropdown");
+    if (dropdown.value !== "") {
+      document.getElementById("step3").style.display = "block";
+    }
+  }
+
+  // Submete o formulário e reinicia o fluxo
+  document.getElementById("accessForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    alert("Solicitação enviada com sucesso!");
+    this.reset();
+    // Reinicia o fluxo: oculta os blocos intermediários
+    document.getElementById("step2").style.display = "none";
+    document.getElementById("step3").style.display = "none";
+  });
+</script>
+{% endblock %}

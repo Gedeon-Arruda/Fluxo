@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Sistemas - Fluxo de Chamados{% endblock %}
+
+{% block content %}
+<div id="support-flow" class="mt-4">
+  <div class="card">
+    <div class="card-header">Sistemas</div>
+    <div class="card-body">
+      <form id="supportForm" onsubmit="return false;">
+        <!-- Etapa 1: Menu Inicial com Ícones -->
+        <div id="initialMenu">
+          
+          <div class="row text-center">
+            <div class="col">
+              <button type="button" class="btn btn-outline-primary w-100 py-4" onclick="selectFlow('ajuda')">
+                <i class="bi bi-tools fs-1 mb-2"></i>
+                <div>Requisitar ajuda técnica</div>
+              </button>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-outline-primary w-100 py-4" onclick="selectFlow('falha')">
+                <i class="bi bi-exclamation-triangle fs-1 mb-2"></i>
+                <div>Reportar Falha</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 2: Escolha ou Informação do Sistema -->
+        <div id="flowChoice" class="mt-4" style="display: none;">
+          <!-- Para Reportar Falha: Dropdown -->
+          <div id="dropdownFlow" style="display: none;">
+            <div class="mb-3">
+              <label for="systemDropdown" class="form-label">Escolha um sistema:</label>
+              <select class="form-select" id="systemDropdown" name="systemChoice" onchange="showActionOrCommon()">
+                <option value="" disabled selected>Escolha um sistema...</option>
+                <option value="adp">ADP</option>
+                <option value="agiliza_ai">Agiliza AI</option>
+                <option value="agilize">Agilize</option>
+                <option value="azure_devops">Azure DevOps</option>
+                <option value="blip">Blip</option>
+                <option value="ccaip">CCAIP</option>
+                <option value="dynamics_ax">Dynamics AX</option>
+                <option value="ease_flow">Ease Flow</option>
+                <option value="email">Email</option>
+                <option value="google_insights">Google Conversational Insights</option>
+                <option value="informange">Informange</option>
+                <option value="nucleos">Núcleos</option>
+                <option value="softexpert">SoftExpert</option>
+                <option value="soumv">SouMV</option>
+                <option value="spa">SPA</option>
+                <option value="speedtask">SpeedTask</option>
+              </select>
+            </div>
+          </div>
+          <!-- Para Requisitar Ajuda Técnica: Campo de texto -->
+          <div id="inputFlow" style="display: none;">
+            <div class="mb-3">
+              <label for="systemInput" class="form-label">Informe o sistema:</label>
+              <input type="text" class="form-control" id="systemInput" name="systemInput" placeholder="Informe o sistema" onkeyup="showActionOrCommon()">
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 3: Seleção da Ação (apenas para Requisitar Ajuda Técnica) -->
+        <div id="actionStep" class="mt-4" style="display: none;">
+          <div class="mb-3">
+            <label class="form-label">Selecione a ação desejada:</label>
+            <div class="form-check">
+              <input type="radio" class="form-check-input" name="actionOption" id="actionInstalar" value="instalar" required onchange="showCommonFields()">
+              <label class="form-check-label" for="actionInstalar">Instalar</label>
+            </div>
+            <div class="form-check">
+              <input type="radio" class="form-check-input" name="actionOption" id="actionAtualizar" value="atualizar" onchange="showCommonFields()">
+              <label class="form-check-label" for="actionAtualizar">Atualizar</label>
+            </div>
+            <div class="form-check">
+              <input type="radio" class="form-check-input" name="actionOption" id="actionLicenciamento" value="licenciamento" onchange="showCommonFields()">
+              <label class="form-check-label" for="actionLicenciamento">Desinstalar</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 4: Dados da Solicitação Comuns -->
+        <div id="commonFields" class="mt-4" style="display: none;">
+          <div class="mb-3">
+            <label for="requester" class="form-label">Requerente:</label>
+            <input type="text" class="form-control" id="requester" name="requester" placeholder="Informe seu nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Telefone:</label>
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="Informe seu telefone" required>
+          </div>
+          <div class="mb-3">
+            <label for="department" class="form-label">Setor/Andar:</label>
+            <input type="text" class="form-control" id="department" name="department" placeholder="Informe o setor/andar" required>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Descrição da Solicitação:</label>
+            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Explique sua solicitação" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Enviar Solicitação</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Variável global para identificar o fluxo selecionado: "ajuda" ou "falha"
+  let selectedFlow = "";
+
+  // Ao clicar nos ícones do menu inicial, registra o fluxo e exibe a escolha do sistema apropriada
+  function selectFlow(flow) {
+    selectedFlow = flow;
+    document.getElementById("flowChoice").style.display = "block";
+    if (flow === "falha") {
+      document.getElementById("dropdownFlow").style.display = "block";
+      document.getElementById("inputFlow").style.display = "none";
+      // No fluxo de Reportar Falha, a etapa de ação não será exibida.
+      document.getElementById("actionStep").style.display = "none";
+    } else if (flow === "ajuda") {
+      document.getElementById("inputFlow").style.display = "block";
+      document.getElementById("dropdownFlow").style.display = "none";
+      // Para Requisitar Ajuda, a etapa de ação será exibida após informarem o sistema.
+      document.getElementById("actionStep").style.display = "none"; // Oculto inicialmente.
+    }
+  }
+
+  // Quando o usuário informa ou seleciona o sistema, decide qual fluxo seguir.
+  function showActionOrCommon() {
+    let systemVal = "";
+    if (selectedFlow === "falha") {
+      systemVal = document.getElementById("systemDropdown").value;
+      if (systemVal.trim() !== "") {
+        // Para Reportar Falha, não há etapa de ação; vai direto para os campos comuns.
+        document.getElementById("commonFields").style.display = "block";
+        document.getElementById("actionStep").style.display = "none";
+      } else {
+        document.getElementById("commonFields").style.display = "none";
+      }
+    } else if (selectedFlow === "ajuda") {
+      systemVal = document.getElementById("systemInput").value;
+      if (systemVal.trim() !== "") {
+        // Para Requisitar Ajuda Técnica, exibe a etapa de ação.
+        document.getElementById("actionStep").style.display = "block";
+      } else {
+        document.getElementById("actionStep").style.display = "none";
+        document.getElementById("commonFields").style.display = "none";
+      }
+    }
+  }
+
+  // Para o fluxo de Requisitar Ajuda Técnica, mostra os campos comuns após a seleção da ação
+  function showCommonFields() {
+    const actionSelected = document.querySelector('input[name="actionOption"]:checked');
+    if (actionSelected) {
+      document.getElementById("commonFields").style.display = "block";
+    }
+  }
+
+  // Submissão do formulário: envia a solicitação e reinicia o fluxo.
+  document.getElementById("supportForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    alert("Solicitação enviada com sucesso!");
+    this.reset();
+    // Reinicia o fluxo: oculta os blocos intermediários
+    document.getElementById("flowChoice").style.display = "none";
+    document.getElementById("actionStep").style.display = "none";
+    document.getElementById("commonFields").style.display = "none";
+  });
+</script>
+{% endblock %}
